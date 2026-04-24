@@ -1,56 +1,68 @@
-"""
-Spread (Delta) metric for diversity assessment.
-
-Measures the relative extent of spread achieved among the obtained
-solutions along the Pareto front. Defined in Section IV-B of the paper.
-
-Delta = (df + dl + sum|d_i - d_bar|) / (df + dl + (N-1)*d_bar)
-
-where:
-  - df = distance to extreme Pareto solutions (farest)
-  - dl = distance to the other extreme
-  - d_i = Euclidean distance between consecutive solutions
-  - d_bar = mean of all d_i
-  - N = number of solutions
-
-Spread = 1 - Delta.  Higher values are better (1 = ideal spread).
-"""
-
 from __future__ import annotations
 import numpy as np
 
+"""
+Spread (Delta) metric for diversity assessment.
+Measures both the uniformity of the obtained solutions and their convergence
+to the boundaries of the true Pareto front.
 
-def spread(obtained_front: np.ndarray) -> float:
-    """Compute the Spread (diversity) metric.
+Delta = (df + dl + sum|d_i - d_bar|) / (df + dl + (N-1)*d_bar)
+
+Lower values are better (0 = perfect spread and boundary convergence).
+"""
+
+def spread(obtained_front: np.ndarray, true_front: np.ndarray) -> float:
+    """Compute the Spread (diversity) metric for 2 objectives.
 
     Args:
-        obtained_front: (N, M) array of objective values from the
+        obtained_front: (N, 2) array of objective values from the
                         nondominated solutions.
+        true_front:     (P, 2) array of objective values from the
+                        true Pareto front.
 
     Returns:
-        Spread value in [0, 1]. Higher is better (1 = perfect uniform spread).
+        Spread value. Lower is better (0 = perfect).
     """
-    n = len(obtained_front)
+    n, m = obtained_front.shape
+    
     if n < 2:
-        return 0.0
+        return float('inf') # Cannot calculate spread with less than 2 points
 
-    # Sort by first objective
+    # Calculate df and dl using the True Pareto front extremes
+    # True extreme points (minimization)
+    true_extreme_f1 = true_front[np.argmin(true_front[:, 0])] # Minimum of objective 1
+    true_extreme_f2 = true_front[np.argmin(true_front[:, 1])] # Minimum of objective 2
+
+    # Obtained extreme points (boundary solutions of the obtained front)
+    obtained_extreme_f1 = obtained_front[np.argmin(obtained_front[:, 0])]
+    obtained_extreme_f2 = obtained_front[np.argmin(obtained_front[:, 1])]
+
+    # Distance between true extremes and obtained extremes
+    df = np.linalg.norm(obtained_extreme_f1 - true_extreme_f1)
+    dl = np.linalg.norm(obtained_extreme_f2 - true_extreme_f2)
+
+    # Sort obtained front by first objective
     sorted_front = obtained_front[np.argsort(obtained_front[:, 0])]
 
     # Euclidean distances between consecutive solutions
     diffs = np.diff(sorted_front, axis=0)
     distances = np.sqrt(np.sum(diffs ** 2, axis=1))
 
+    if len(distances) == 0:
+        return float('inf')
+
     d_bar = np.mean(distances)
 
-    # d_f = distance from first solution to ideal extreme (use first solution as reference)
-    # d_l = distance from last solution to ideal extreme (use last solution as reference)
-    # When true Pareto extremes are not known, we approximate df = dl = d_bar
-    df = d_bar
-    dl = d_bar
-
+    # Sum of absolute deviations from the mean distance
     sum_dev = np.sum(np.abs(distances - d_bar))
 
-    delta = (df + dl + sum_dev) / (df + dl + (n - 1) * d_bar)
+    # Compute Delta 
+    denominator = df + dl + (n - 1) * d_bar
+    
+    if denominator == 0:
+        return float('inf')
 
-    return float(1.0 - delta)
+    delta = (df + dl + sum_dev) / denominator
+
+    
+    return float(delta)

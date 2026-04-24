@@ -1,3 +1,6 @@
+from __future__ import annotations
+import numpy as np
+
 """
 Generational Distance (GD) metric.
 
@@ -10,19 +13,14 @@ where d_i is the minimum Euclidean distance from solution i to the
 nearest point on the true Pareto front.
 """
 
-from __future__ import annotations
-import numpy as np
-
-
 def generational_distance(obtained_front: np.ndarray, true_front: np.ndarray) -> float:
     """Compute the Generational Distance metric.
 
     Args:
         obtained_front: (N, M) array — objectives of solutions found by the algorithm.
         true_front: (P, M) array — objectives of the true Pareto-optimal set.
-
     Returns:
-        GD value (non-negative, 0 = perfect).
+        GD value (non-negative, 0 = perfect convergence).
     """
     if len(obtained_front) == 0:
         return float("inf")

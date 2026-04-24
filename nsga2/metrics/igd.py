@@ -1,3 +1,6 @@
+from __future__ import annotations
+import numpy as np
+
 """
 Inverted Generational Distance (IGD) metric.
 
@@ -13,10 +16,6 @@ to the nearest obtained solution.
 Lower values are better (0 = perfect).
 """
 
-from __future__ import annotations
-import numpy as np
-
-
 def inverted_generational_distance(
     obtained_front: np.ndarray, true_front: np.ndarray
 ) -> float:
@@ -30,6 +29,9 @@ def inverted_generational_distance(
         IGD value (non-negative, 0 = perfect).
     """
     if len(true_front) == 0:
+        return float("inf")
+    
+    if len(obtained_front) == 0:
         return float("inf")
 
     # Pairwise distances from each true point to all obtained points: (P, N)
