@@ -1,5 +1,3 @@
-"""Tests for performance metrics."""
-
 import pytest
 import numpy as np
 from nsga2.metrics.gd import generational_distance
@@ -56,12 +54,7 @@ class TestHypervolume:
 
 class TestSpread:
     def test_perfect_spread(self):
-        """Uniformly spaced solutions should give spread close to 1.
-
-        Note: the Spread metric approximates df=dl=d_bar when the true
-        Pareto extremes are unknown, which introduces some deviation.
-        With many uniformly spaced points the spread is still high.
-        """
+        """Uniformly spaced solutions should give spread close to 1."""
         # Create 100 uniformly spaced points on f2 = 1 - f1
         f1 = np.linspace(0, 1, 100)
         f2 = 1.0 - f1

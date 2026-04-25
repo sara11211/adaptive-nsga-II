@@ -1,5 +1,3 @@
-"""Tests for crowding distance assignment."""
-
 import pytest
 import numpy as np
 from nsga2.core.individual import Individual

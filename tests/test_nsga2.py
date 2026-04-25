@@ -1,76 +1,49 @@
-"""Tests for the main NSGA-II algorithm loop."""
-
 import pytest
 import numpy as np
 from nsga2.core.nsga2 import NSGA2
-from nsga2.problems.zdt import ZDT1, ZDT2
-from nsga2.problems.constrained import CONSTR
-from nsga2.metrics.gd import generational_distance
-
+from nsga2.problems.discrete import OneZeroMax
 
 class TestNSGA2Integration:
-    def test_zdt1_convergence(self):
-        """NSGA-II should converge reasonably close to the ZDT1 Pareto front."""
-        problem = ZDT1()
+    
+    def test_discrete_convergence(self):
+        """NSGA-II should find a diverse set of solutions on OneZeroMax."""
+        problem = OneZeroMax(n_var=30, max_val=1)
+        
         optimizer = NSGA2(
             problem=problem,
             pop_size=50,
             n_var=problem.n_var,
             n_obj=problem.n_obj,
-            bounds=problem.bounds,
+            num_choices=problem.num_choices, 
             seed=42,
         )
-        _, pareto_front = optimizer.run(generations=100, verbose=False)
+        
+        pareto_set, pareto_front = optimizer.run(generations=100, verbose=False)
 
-        true_pf = problem.pareto_front(n_points=500)
-        gd = generational_distance(pareto_front, true_pf)
+        # 1. Check that we found solutions
+        assert len(pareto_set) > 0, "No solutions found"
+        
+        # 2. Check variable integrity (must be integers 0 or 1)
+        assert np.all(pareto_set >= 0)
+        assert np.all(pareto_set <= 1)
+        # Check they are actually integers
+        assert np.all(pareto_set == pareto_set.astype(int))
 
-        # Should achieve GD < 0.05 with 100 generations on ZDT1
-        assert gd < 0.1, f"GD = {gd:.6f}, expected < 0.1"
-
-    def test_zdt2_convergence(self):
-        """NSGA-II should converge reasonably on ZDT2 (non-convex front)."""
-        problem = ZDT2()
-        optimizer = NSGA2(
-            problem=problem,
-            pop_size=50,
-            n_var=problem.n_var,
-            n_obj=problem.n_obj,
-            bounds=problem.bounds,
-            seed=42,
-        )
-        _, pareto_front = optimizer.run(generations=100, verbose=False)
-
-        true_pf = problem.pareto_front(n_points=500)
-        gd = generational_distance(pareto_front, true_pf)
-        assert gd < 0.1, f"GD = {gd:.6f}, expected < 0.1"
-
-    def test_constrained_problem(self):
-        """NSGA-II should find feasible solutions on the CONSTR problem."""
-        problem = CONSTR()
-        optimizer = NSGA2(
-            problem=problem,
-            pop_size=50,
-            n_var=problem.n_var,
-            n_obj=problem.n_obj,
-            n_constr=problem.n_constr,
-            bounds=problem.bounds,
-            seed=42,
-        )
-        _, pareto_front = optimizer.run(generations=100, verbose=False)
-
-        # At least some solutions should exist
-        assert len(pareto_front) > 0
+        # 3. Check diversity (OneZeroMax should produce a spread of sums)
+        # If converged correctly, we should have solutions with sum_x near 0 and near 30
+        sums = np.sum(pareto_set, axis=1)
+        assert np.min(sums) < 5, "Did not find solutions near the 'zero' objective"
+        assert np.max(sums) > 25, "Did not find solutions near the 'max' objective"
 
     def test_history_tracking(self):
-        """The optimizer should record history at every generation."""
-        problem = ZDT1()
+        """The optimizer record history at every generation."""
+        problem = OneZeroMax(n_var=10)
         optimizer = NSGA2(
             problem=problem,
             pop_size=30,
             n_var=problem.n_var,
             n_obj=problem.n_obj,
-            bounds=problem.bounds,
+            num_choices=problem.num_choices,
             seed=42,
         )
         optimizer.run(generations=20, verbose=False)
@@ -81,11 +54,17 @@ class TestNSGA2Integration:
 
     def test_reproducibility(self):
         """Same seed should produce identical results."""
-        problem = ZDT1()
+        problem = OneZeroMax(n_var=10)
 
         def run(seed):
-            opt = NSGA2(problem, pop_size=30, n_var=problem.n_var,
-                        n_obj=problem.n_obj, bounds=problem.bounds, seed=seed)
+            opt = NSGA2(
+                problem, 
+                pop_size=30, 
+                n_var=problem.n_var, 
+                n_obj=problem.n_obj,
+                num_choices=problem.num_choices,
+                seed=seed
+            )
             _, pf = opt.run(generations=10, verbose=False)
             return pf
 

@@ -1,5 +1,3 @@
-"""Tests for the ZDT benchmark problems."""
-
 import pytest
 import numpy as np
 from nsga2.problems.zdt import ZDT1, ZDT2, ZDT3, ZDT4, ZDT6

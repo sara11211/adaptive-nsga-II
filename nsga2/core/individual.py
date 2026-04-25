@@ -34,7 +34,7 @@ class Individual:
 
     def evaluate(self, problem) -> None:
         """
-        Evaluate objectives and constraints using the given problem.
+        Evaluate objectives using the given problem.
 
         Args:
             problem: A callable with ``evaluate(x)`` method that returns objectives.

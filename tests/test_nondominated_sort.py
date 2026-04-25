@@ -1,5 +1,3 @@
-"""Tests for fast nondominated sorting."""
-
 import pytest
 import numpy as np
 from nsga2.core.individual import Individual
@@ -104,17 +102,3 @@ class TestFastNondominatedSort:
         fronts = fast_non_dominated_sort(pop)
         assert len(fronts) == 1
         assert len(fronts[0]) == 3
-
-    def test_constrained_dominance(self):
-        """Feasible solution dominates infeasible one."""
-        feasible = Individual(np.array([0.0]), n_objectives=2, n_constraints=1)
-        feasible.objectives = np.array([3.0, 3.0])
-        feasible.constraints = np.array([1.0])  # satisfied
-
-        infeasible = Individual(np.array([0.0]), n_objectives=2, n_constraints=1)
-        infeasible.objectives = np.array([1.0, 1.0])  # better objectives
-        infeasible.constraints = np.array([-1.0])  # violated
-
-        fronts = fast_non_dominated_sort([feasible, infeasible])
-        assert len(fronts[0]) == 1
-        assert fronts[0][0] is feasible
