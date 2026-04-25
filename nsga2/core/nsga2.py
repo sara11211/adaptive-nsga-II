@@ -1,5 +1,6 @@
 from __future__ import annotations
 import numpy as np
+# ADDED: Callable to the imports
 from typing import Callable, Dict, List, Optional, Tuple
 
 from nsga2.core.individual import Individual
@@ -93,8 +94,19 @@ class NSGA2:
                 offspring.append(c2)
         return offspring
 
-    def run(self, generations: int = 250, verbose: bool = True) -> Tuple[np.ndarray, np.ndarray]:
-        """Execute the NSGA-II algorithm."""
+    def run(
+        self, 
+        generations: int = 250, 
+        verbose: bool = True, 
+        callback: Optional[Callable] = None
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """Execute the NSGA-II algorithm.
+        
+        Args:
+            generations: Maximum number of generations.
+            verbose: Print progress every 50 generations.
+            callback: Optional function called every generation with (gen, population).
+        """
         if verbose:
             print(f"NSGA-II (Discrete) | pop_size={self.pop_size}, gens={generations}")
 
@@ -125,7 +137,7 @@ class NSGA2:
             # 5. Update Population
             population = new_population
 
-            # Sort the new population to get the best front for recording
+            # History Tracking
             current_fronts = fast_non_dominated_sort(population)
             best_front = current_fronts[0]
             
@@ -135,11 +147,13 @@ class NSGA2:
                 "front_size": len(best_front),
                 "objectives": np.array([ind.objectives for ind in best_front])
             })
-            # ------------------------------
 
             # Logging
             if verbose and (gen + 1) % 50 == 0:
                 print(f"  Gen {gen + 1:>4d}/{generations} | Front 0 size: {len(best_front)}")
+
+            if callback is not None:
+                callback(gen, population)
 
         # Extract Final Results
         final_fronts = fast_non_dominated_sort(population)
