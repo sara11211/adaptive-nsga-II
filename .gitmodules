@@ -1,0 +1,3 @@
+[submodule "HW-NAS-Bench"]
+	path = HW-NAS-Bench
+	url = https://github.com/GATECH-EIC/HW-NAS-Bench.git
