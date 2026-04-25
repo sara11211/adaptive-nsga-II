@@ -8,4 +8,9 @@ build/
 *.egg
 .venv/
 venv/
-output/*.png
+*.pth
+*.npy
+*.npz
+output/
+__pycache__/
+

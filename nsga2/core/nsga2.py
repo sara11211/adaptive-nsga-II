@@ -116,8 +116,19 @@ class NSGA2:
     # Main loop 
     # ------------------------------------------------------------------
 
-    def run(self, generations: int = 250, verbose: bool = True) -> Tuple[np.ndarray, np.ndarray]:
-        """Execute the NSGA-II algorithm."""
+    def run(self, generations: int = 250, verbose: bool = True, callback: Optional[Callable] = None) -> Tuple[np.ndarray, np.ndarray]:
+        """Execute the NSGA-II algorithm.
+
+        Args:
+            generations: Maximum number of generations (default 250).
+            verbose: Print progress every 50 generations (default True).
+
+        Returns:
+            (pareto_set, pareto_front) where:
+            - pareto_set is an (N, n_var) array of decision variables for
+              the final nondominated front.
+            - pareto_front is an (N, n_obj) array of objective values.
+        """
         if verbose:
             print(f"NSGA-II (Discrete) | pop_size={self.pop_size}, gens={generations}")
 
@@ -153,9 +164,13 @@ class NSGA2:
 
             # Logging
             if verbose and (gen + 1) % 50 == 0:
-                # Re-sort just for logging purposes
-                final_fronts = fast_non_dominated_sort(population)
-                print(f"  Gen {gen + 1:>4d}/{generations} | Front 0 size: {len(final_fronts[0])}")
+                print(f"  Gen {gen + 1:>4d}/{generations} | "
+                      f"fronts={len(final_fronts)}, "
+                      f"front0_size={len(best_front)}")
+                
+            # Call user callback
+            if callback is not None:
+                callback(gen, population)
 
         # Extract Final Results
         final_fronts = fast_non_dominated_sort(population)

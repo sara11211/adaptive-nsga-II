@@ -1,8 +1,6 @@
 import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
 
-"""Shared plotting style configuration — colors, markers, fonts, defaults."""
-
 # ── Font setup ──────────────────────────────────────────────────
 try:
     fm.fontManager.addfont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")

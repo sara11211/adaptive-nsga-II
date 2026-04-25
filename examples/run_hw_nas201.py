@@ -1,57 +1,54 @@
-"""
-Example: Run NSGA-II on HW-NAS-201 across multiple hardware targets.
+"""Run NSGA-II on HW-NAS-201 across all datasets and hardware targets.
 
 Usage:
     python examples/run_hw_nas201.py
+    python examples/run_hw_nas201.py --dataset cifar100
+    python examples/run_hw_nas201.py --hardware edgegpu edgetpu --gens 50
 """
 
 import sys
 import os
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import numpy as np
-from nsga2.core.nsga2 import NSGA2
-# The benchmarks package is at the project root level
-from benchmarks.hw_nas_201.problem import HWNAS201, AVAILABLE_HARDWARES
-from nsga2.metrics.igd import inverted_generational_distance
-from nsga2.metrics.hv import hypervolume
-from nsga2.visualization.pareto_front import plot_pareto_front
+from benchmarks.hw_nas_201.config import DATASETS
+from benchmarks.hw_nas_201.run_hw_benchmark import run_hw_benchmark
 
 
 def main():
-    os.makedirs("output/hw_nas_201", exist_ok=True)
+    """Parse arguments and execute HW-NAS-201 benchmark across datasets.
+    
+    Returns: 
+        Dictionary of aggregated metric results per dataset.
+    """
+    from argparse import ArgumentParser
+    parser = ArgumentParser(description="HW-NAS-201 example — all datasets & devices")
+    parser.add_argument("--dataset", type=str, nargs="*", default=None,
+                        help="Datasets to run (default: all)")
+    parser.add_argument("--hardware", type=str, nargs="*", default=None)
+    parser.add_argument("--runs", type=int, default=None)
+    parser.add_argument("--gens", type=int, default=None)
+    parser.add_argument("--pop-size", type=int, default=None)
+    args = parser.parse_args()
 
-    for hw in AVAILABLE_HARDWARES:
-        print(f"\n--- HW-NAS-201 on {hw} ---")
-        problem = HWNAS201(hardware=hw)
-        true_pf = problem.pareto_front()
+    datasets = args.dataset or DATASETS
+    all_results = {}
 
-        optimizer = NSGA2(
-            problem=problem,
-            pop_size=50,
-            n_var=problem.n_var,
-            n_obj=problem.n_obj,
-            bounds=problem.bounds,
-            seed=42,
-            eta_c=5.0,
-            eta_m=10.0,
+    for dataset in datasets:
+        print(f"\n{'#'*60}")
+        print(f"  Dataset: {dataset}")
+        print(f"{'#'*60}")
+
+        results = run_hw_benchmark(
+            dataset=dataset,
+            hardwares=args.hardware,
+            n_runs=args.runs,
+            generations=args.gens,
+            pop_size=args.pop_size,
         )
+        all_results[dataset] = results
 
-        _, pareto_front = optimizer.run(generations=100)
-
-        igd = inverted_generational_distance(pareto_front, true_pf)
-        ref = np.max(true_pf, axis=0) + 0.1
-        hv = hypervolume(pareto_front, ref)
-        print(f"  IGD: {igd:.6f} | HV: {hv:.6f} | Front: {len(pareto_front)}")
-
-        plot_pareto_front(
-            pareto_front,
-            true_front=true_pf,
-            title=f"HW-NAS-201 — {hw}",
-            xlabel="Negative Accuracy",
-            ylabel="Latency (ms)",
-            save_path=f"output/hw_nas_201/{hw}_pareto.png",
-        )
+    return all_results
 
 
 if __name__ == "__main__":

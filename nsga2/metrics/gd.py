@@ -1,16 +1,14 @@
 from __future__ import annotations
 import numpy as np
 
-"""Generational Distance (GD). Lower is better (0 = perfect)."""
-
 def generational_distance(obtained_front: np.ndarray, true_front: np.ndarray) -> float:
     """GD = sqrt(mean(min_d_i^2)) — avg distance from obtained solutions to true front.
 
     Args:
         obtained_front: (N, M) array of obtained objectives.
         true_front: (P, M) array of true Pareto-optimal objectives.
-    Returns: GD value.
-    
+    Returns: 
+        GD value.
     """
     if len(obtained_front) == 0:
         return float("inf")

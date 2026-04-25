@@ -1,16 +1,14 @@
 from __future__ import annotations
 import numpy as np
 
-"""Hypervolume (HV) indicator. Higher is better."""
-
 def hypervolume(front: np.ndarray, ref_point: np.ndarray) -> float:
     """Compute 2D hypervolume by summing rectangles from each point to the reference point.
 
     Args:
         front: (N, 2) array of objectives (minimisation).
         ref_point: (2,) reference point — must dominate all solutions.
-    Returns: Hypervolume value.
-    
+    Returns: 
+        Hypervolume value.
     """
     if len(front) == 0:
         return 0.0

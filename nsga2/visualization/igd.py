@@ -4,10 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from nsga2.visualization.style import METRIC_STYLE, LABEL_SIZE, TITLE_SIZE, DPI
 
-"""IGD convergence plot."""
-
 def plot_igd(
-    metric_values: List[float],
+    metric_values: List[float],                     # List of metric values, one per generation.
     title: str = "Inverted Generational Distance",
     xlabel: str = "Generation",
     ylabel: str = "IGD",
@@ -15,10 +13,13 @@ def plot_igd(
     show: bool = True,
     figsize: tuple = (8, 5),
 ) -> plt.Figure:
-    
     """Plot IGD across generations."""
+
+    # Styling
     s = METRIC_STYLE["IGD"]
     fig, ax = plt.subplots(figsize=figsize)
+
+    # Plot
     generations = np.arange(1, len(metric_values) + 1)
     ax.plot(generations, metric_values, color=s["color"], linewidth=2, marker=s["marker"], markersize=3)
     ax.set_xlabel(xlabel, fontsize=LABEL_SIZE)
@@ -27,6 +28,7 @@ def plot_igd(
     ax.grid(True, alpha=0.3)
     plt.tight_layout()
 
+    # Export
     if save_path:
         fig.savefig(save_path, dpi=DPI, bbox_inches="tight")
         print(f"IGD plot saved to {save_path}")

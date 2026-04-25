@@ -1,16 +1,14 @@
 from __future__ import annotations
 import numpy as np
 
-"""Spread (Delta) diversity metric. Lower is better (0 = perfect)."""
-
 def spread(obtained_front: np.ndarray, true_front: np.ndarray) -> float:
     """Delta = (df + dl + sum|d_i - d_bar|) / (df + dl + (N-1)*d_bar).
 
     Args:
         obtained_front: (N, 2) array of obtained objectives.
         true_front: (P, 2) array of true Pareto-optimal objectives.
-    Returns: Spread value.
-
+    Returns: 
+        Spread value.
     """
     n = len(obtained_front)
 
