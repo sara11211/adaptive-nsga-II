@@ -62,8 +62,6 @@ class HWNAS201:
 
         self.n_var = 1
         self.n_obj = 2
-        self.n_constr = 0
-        self.bounds = np.array([[0.0, float(self._n - 1)]])
 
     def _load_data(self):
         """Load and cache architecture data from CSV."""
@@ -99,10 +97,10 @@ class HWNAS201:
         Args:
             x: Decision variable array (contains index).
         Returns: 
-            Tuple of (objectives array, constraints array).
+            Numpy array of objective values.
         """
         idx = int(np.clip(x[0], 0, self._n - 1))
-        return np.array([-self._accuracies[idx], self._latencies[idx]]), np.array([])
+        return np.array([-self._accuracies[idx], self._latencies[idx]])
 
     def arch_str(self, index):
         """Get the architecture string for a given index."""

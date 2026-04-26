@@ -1,6 +1,4 @@
-"""
-Helper utilities for post-processing NSGA-II results.
-"""
+"""Helper utilities for post-processing NSGA-II results."""
 
 from __future__ import annotations
 import numpy as np

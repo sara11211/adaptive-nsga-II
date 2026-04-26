@@ -1,8 +1,6 @@
 from __future__ import annotations
 import numpy as np
-# ADDED: Callable to the imports
 from typing import Callable, Dict, List, Optional, Tuple
-
 from nsga2.core.individual import Individual
 from nsga2.core.nondominated_sort import fast_non_dominated_sort
 from nsga2.core.crowding_distance import crowding_distance_assignment

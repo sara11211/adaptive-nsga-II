@@ -8,8 +8,6 @@ ALGORITHM = {
     "generations": 100,
     "n_runs": 5,
     "seed_base": 42,
-    "eta_c": 5.0,
-    "eta_m": 10.0,
     "prob_crossover": 0.9,
     "ref_offset": 0.1,
 }
@@ -33,7 +31,6 @@ OUTPUT = {
 }
 
 # ── Metrics & Plot Labels ──────────────────────────────────────────────────────
-METRICS = ["GD", "IGD", "IGD+", "HV", "Spread"]
 METRICS = ["GD", "IGD", "IGD+", "HV", "Spread"]
 
 PLOT = {
