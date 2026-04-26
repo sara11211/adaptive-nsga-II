@@ -1,0 +1,11 @@
+architecture,accuracy,latency_ms
+|nor_conv_1x1~0|+|nor_conv_3x3~0|nor_conv_1x1~1|+|nor_conv_1x1~0|nor_conv_3x3~1|nor_conv_3x3~2|,46.5333,1.0310
+|nor_conv_1x1~0|+|none~0|nor_conv_3x3~1|+|skip_connect~0|nor_conv_1x1~1|nor_conv_3x3~2|,45.5833,0.7812
+|nor_conv_1x1~0|+|nor_conv_1x1~0|nor_conv_3x3~1|+|skip_connect~0|none~1|nor_conv_3x3~2|,46.1333,0.7956
+|nor_conv_3x3~0|+|skip_connect~0|nor_conv_3x3~1|+|nor_conv_3x3~0|none~1|skip_connect~2|,46.2500,0.8004
+|nor_conv_1x1~0|+|none~0|nor_conv_3x3~1|+|skip_connect~0|none~1|nor_conv_1x1~2|,45.0000,0.5823
+|nor_conv_1x1~0|+|nor_conv_3x3~0|nor_conv_1x1~1|+|nor_conv_1x1~0|nor_conv_3x3~1|nor_conv_3x3~2|,46.5333,1.0310
+|nor_conv_3x3~0|+|skip_connect~0|nor_conv_1x1~1|+|nor_conv_1x1~0|nor_conv_3x3~1|none~2|,45.3111,0.6667
+|nor_conv_3x3~0|+|nor_conv_3x3~0|nor_conv_3x3~1|+|skip_connect~0|nor_conv_3x3~1|nor_conv_1x1~2|,46.7111,1.0420
+|nor_conv_1x1~0|+|none~0|nor_conv_3x3~1|+|skip_connect~0|none~1|nor_conv_3x3~2|,45.1222,0.6487
+|nor_conv_3x3~0|+|avg_pool_3x3~0|none~1|+|nor_conv_1x1~0|nor_conv_3x3~1|nor_conv_1x1~2|,44.8333,-1.0000

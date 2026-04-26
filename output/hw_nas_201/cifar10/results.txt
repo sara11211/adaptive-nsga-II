@@ -1,0 +1,62 @@
+HW-NAS-201 Benchmark Results
+Generated: 2026-04-26 11:50:16
+
+=== Parameters ===
+  pop_size: 50
+  generations: 100
+  n_runs: 5
+  seed_base: 42
+  prob_crossover: 0.9
+  ref_offset: 0.1
+  dataset: cifar10
+  lookup_dir: C:\Users\DELL\Downloads\nsga-II-first-version\nsga-II\data\lookup
+
+=== Results ===
+
+  edgegpu
+    GD: 0.020093 +/- 0.008967
+    IGD: 0.008915 +/- 0.000845
+    IGD+: 0.000573 +/- 0.000341
+    HV: 1.049879 +/- 0.002721
+    Spread: 1.313790 +/- 0.059396
+    n_pareto: 30
+
+  raspi4
+    GD: 0.015783 +/- 0.007016
+    IGD: 0.005089 +/- 0.001228
+    IGD+: 0.001049 +/- 0.001139
+    HV: 1.159588 +/- 0.003063
+    Spread: 1.218660 +/- 0.031914
+    n_pareto: 40
+
+  edgetpu
+    GD: 0.281062 +/- 0.058621
+    IGD: 0.312426 +/- 0.017487
+    IGD+: 0.284341 +/- 0.012045
+    HV: 1.155331 +/- 0.004994
+    Spread: 1.059472 +/- 0.109160
+    n_pareto: 11
+
+  pixel3
+    GD: 0.027885 +/- 0.015641
+    IGD: 0.007690 +/- 0.002420
+    IGD+: 0.000590 +/- 0.000508
+    HV: 1.154685 +/- 0.007344
+    Spread: 1.269739 +/- 0.015594
+    n_pareto: 50
+
+  eyeriss
+    GD: 0.028597 +/- 0.009424
+    IGD: 0.027104 +/- 0.013667
+    IGD+: 0.010417 +/- 0.010489
+    HV: 1.027892 +/- 0.012052
+    Spread: 0.862896 +/- 0.140410
+    n_pareto: 23
+
+  fpga
+    GD: 0.035274 +/- 0.004011
+    IGD: 0.019595 +/- 0.003396
+    IGD+: 0.005690 +/- 0.002122
+    HV: 0.976919 +/- 0.004428
+    Spread: 0.703004 +/- 0.071810
+    n_pareto: 21

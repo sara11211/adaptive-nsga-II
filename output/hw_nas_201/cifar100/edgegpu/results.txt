@@ -1,0 +1,22 @@
+HW-NAS-201 Benchmark Results
+Generated: 2026-04-26 11:51:55
+
+=== Parameters ===
+  pop_size: 50
+  generations: 100
+  n_runs: 5
+  seed_base: 42
+  prob_crossover: 0.9
+  ref_offset: 0.1
+  dataset: cifar100
+  lookup_dir: C:\Users\DELL\Downloads\nsga-II-first-version\nsga-II\data\lookup
+
+=== Results ===
+
+  edgegpu
+    GD: 0.012010 +/- 0.008955
+    IGD: 0.013981 +/- 0.011607
+    IGD+: 0.006817 +/- 0.013179
+    HV: 1.021840 +/- 0.003147
+    Spread: 1.261158 +/- 0.074356
+    n_pareto: 34
