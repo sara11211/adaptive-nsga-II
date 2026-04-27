@@ -120,9 +120,8 @@ def save_architectures_csv(problem, best_set, best_front, save_dir):
         writer = csv.writer(f)
         writer.writerow(["architecture", "accuracy", "latency_ms"])
         for i in range(len(best_set)):
-            idx = int(best_set[i, 0])
             writer.writerow([
-                problem.arch_str(idx),
+                problem.arch_str(best_set[i]),
                 f"{plot_front[i, 0]:.4f}",
                 f"{plot_front[i, 1]:.4f}",
             ])

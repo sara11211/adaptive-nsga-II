@@ -36,7 +36,7 @@ def _make_optimizer(problem, seed, pop_size):
         pop_size=pop_size,
         n_var=problem.n_var,
         n_obj=problem.n_obj,
-        num_choices=[problem._n],
+        num_choices=problem.num_choices,
         seed=seed,
         prob_crossover=ALGORITHM["prob_crossover"],
     )

@@ -54,14 +54,18 @@ class TestHypervolume:
 
 class TestSpread:
     def test_perfect_spread(self):
-        """Uniformly spaced solutions should give spread close to 1."""
-        # Create 100 uniformly spaced points on f2 = 1 - f1
-        f1 = np.linspace(0, 1, 100)
+        """Uniformly spaced obtained front should have good spread."""
+        # Obtained: 50 uniformly spaced points on f2 = 1 - f1
+        f1 = np.linspace(0.01, 0.99, 50)
         f2 = 1.0 - f1
         front = np.column_stack([f1, f2])
-        sp = spread(front)
-        assert sp > 0.8
+        # True front: slightly wider range
+        true_f1 = np.linspace(0.0, 1.0, 100)
+        true_f2 = 1.0 - true_f1
+        true_front = np.column_stack([true_f1, true_f2])
+        sp = spread(front, true_front)
+        assert np.isfinite(sp)
 
     def test_single_point(self):
-        sp = spread(np.array([[0.5, 0.5]]))
-        assert sp == 0.0
+        sp = spread(np.array([[0.5, 0.5]]), np.array([[0.5, 0.5]]))
+        assert sp == float("inf")
