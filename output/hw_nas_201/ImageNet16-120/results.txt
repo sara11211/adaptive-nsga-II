@@ -1,5 +1,5 @@
 HW-NAS-201 Benchmark Results
-Generated: 2026-04-27 09:35:13
+Generated: 2026-04-29 10:06:33
 
 === Parameters ===
   pop_size: 50
@@ -20,6 +20,8 @@ Generated: 2026-04-27 09:35:13
     HV: 0.990448 +/- 0.001832
     Spread: 1.370958 +/- 0.025181
     n_pareto: 50
+    n_true_pareto: 36
+    n_on_true_pf: 28
 
   raspi4
     GD: 0.001617 +/- 0.000368
@@ -28,6 +30,8 @@ Generated: 2026-04-27 09:35:13
     HV: 1.005424 +/- 0.000118
     Spread: 1.225462 +/- 0.011962
     n_pareto: 50
+    n_true_pareto: 57
+    n_on_true_pf: 24
 
   edgetpu
     GD: 0.010402 +/- 0.000620
@@ -36,6 +40,8 @@ Generated: 2026-04-27 09:35:13
     HV: 1.010615 +/- 0.001439
     Spread: 1.203398 +/- 0.038012
     n_pareto: 50
+    n_true_pareto: 38
+    n_on_true_pf: 21
 
   pixel3
     GD: 0.004148 +/- 0.000566
@@ -44,6 +50,8 @@ Generated: 2026-04-27 09:35:13
     HV: 1.067799 +/- 0.000361
     Spread: 1.079477 +/- 0.016337
     n_pareto: 50
+    n_true_pareto: 45
+    n_on_true_pf: 20
 
   eyeriss
     GD: 0.004393 +/- 0.002023
@@ -52,6 +60,8 @@ Generated: 2026-04-27 09:35:13
     HV: 0.977065 +/- 0.000756
     Spread: 1.468412 +/- 0.000799
     n_pareto: 50
+    n_true_pareto: 14
+    n_on_true_pf: 12
 
   fpga
     GD: 0.007680 +/- 0.001309
@@ -60,3 +70,5 @@ Generated: 2026-04-27 09:35:13
     HV: 0.950828 +/- 0.000945
     Spread: 1.352984 +/- 0.020144
     n_pareto: 50
+    n_true_pareto: 18
+    n_on_true_pf: 13

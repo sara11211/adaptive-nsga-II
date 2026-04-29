@@ -11,6 +11,6 @@ venv/
 *.pth
 *.npy
 *.npz
-output/
+output/*.png
 __pycache__/
 

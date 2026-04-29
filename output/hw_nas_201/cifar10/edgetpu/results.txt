@@ -1,5 +1,5 @@
 HW-NAS-201 Benchmark Results
-Generated: 2026-04-27 09:17:50
+Generated: 2026-04-29 09:57:42
 
 === Parameters ===
   pop_size: 50
@@ -10,6 +10,7 @@ Generated: 2026-04-27 09:17:50
   ref_offset: 0.1
   dataset: cifar10
   lookup_dir: C:\Users\DELL\Downloads\nsga-II-first-version\nsga-II\data\lookup
+  hardware: edgetpu
 
 === Results ===
 
@@ -20,3 +21,5 @@ Generated: 2026-04-27 09:17:50
     HV: 1.054617 +/- 0.000908
     Spread: 1.323992 +/- 0.042709
     n_pareto: 50
+    n_true_pareto: 29
+    n_on_true_pf: 17

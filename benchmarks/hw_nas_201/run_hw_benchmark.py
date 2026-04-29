@@ -23,7 +23,7 @@ from nsga2.core.nsga2 import NSGA2
 from benchmarks.hw_nas_201.config import ALGORITHM, DATA, OUTPUT, DEFAULT_DATASET
 from benchmarks.hw_nas_201.problem import HWNAS201, discover_hardware
 from benchmarks.hw_nas_201.utils import (
-    extract_front, compute_metrics, aggregate_metrics, print_metrics,
+    extract_front,  compute_metrics, count_on_true_front, aggregate_metrics, print_metrics,
     create_hw_dirs, save_results_txt, save_architectures_csv,
     save_history_csv, generate_plots,
 )
@@ -40,7 +40,6 @@ def _make_optimizer(problem, seed, pop_size):
         seed=seed,
         prob_crossover=ALGORITHM["prob_crossover"],
     )
-
 
 def run_hw_benchmark(
     hardwares=None, dataset=None,  
@@ -122,11 +121,15 @@ def run_hw_benchmark(
 
         all_results[hw] = aggregate_metrics(run_metrics)
         all_results[hw]["n_pareto"] = len(best_front)
+        all_results[hw]["n_true_pareto"] = len(true_pf)
+        all_results[hw]["n_on_true_pf"] = count_on_true_front(best_front, true_pf)
 
         print_metrics({hw: all_results[hw]})
 
         # Save outputs
-        save_results_txt({hw: all_results[hw]}, params, hw_dir)
+        hw_params = {**params, "hardware": hw}
+        save_results_txt({hw: all_results[hw]}, hw_params, hw_dir)
+        save_results_txt({hw: all_results[hw]}, hw_params, hw_dir)
         save_architectures_csv(problem, best_set, best_front, hw_dir)
         save_history_csv(history, hw_dir)
         last_metrics = {k: v[-1] for k, v in history.items() if v}

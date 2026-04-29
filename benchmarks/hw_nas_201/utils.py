@@ -27,6 +27,15 @@ def extract_front(population):
     fronts = fast_non_dominated_sort(population)
     return np.array([ind.objectives for ind in fronts[0]])
 
+def count_on_true_front(obtained_front, true_pf, atol=1e-6):
+    """Count how many unique true Pareto front points are matched
+    by at least one obtained solution"""
+    covered = np.zeros(len(true_pf), dtype=bool)
+    for obj in obtained_front:
+        for i, t in enumerate(true_pf):
+            if not covered[i] and np.allclose(t, obj, atol=atol):
+                covered[i] = True
+    return int(np.sum(covered))
 
 def to_plot_space(front):
     """[-accuracy, latency] → [accuracy, latency]"""
@@ -161,9 +170,9 @@ def generate_plots(hw, best_front, true_pf, history, dirs, metrics=None):
 
      # Pareto fronts
     plot_pareto_front(
-        best_plot, true_front=true_plot,
+        best_plot[:, [1, 0]], true_front=true_plot[:, [1, 0]],
         title=f"HW-NAS-201 - {hw}",
-        xlabel=PLOT["xlabel"], ylabel=PLOT["ylabel"],
+        xlabel=PLOT["ylabel"], ylabel=PLOT["xlabel"],
         save_path=os.path.join(dirs["pareto"], f"{hw}_pareto.png"),
         show=False,
     )
