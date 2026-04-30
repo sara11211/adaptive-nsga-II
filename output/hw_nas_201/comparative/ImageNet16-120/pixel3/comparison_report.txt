@@ -1,0 +1,36 @@
+========================================================================
+  HW-NAS-201 Comparison: Baseline NSGA-II vs Adaptive NSGA-II (SaMuNet)
+  Hardware: pixel3
+  Generated: 2026-04-30 22:10:56
+========================================================================
+
+=== Parameters ===
+  pop_size: 50
+  generations: 100
+  n_runs: 5
+  seed_base: 42
+  prob_crossover: 0.9
+  ref_offset: 0.01
+  dataset: ImageNet16-120
+  lookup_dir: C:\Users\DELL\Downloads\nsga-II-first-version\dynamic-nsga-II\data\lookup
+
+=== Adaptive Mutation Config ===
+  initial_probs: [0.3, 0.4, 0.3]
+  update_period: 5
+
+========================================================================
+  pixel3 — Metric Comparison
+========================================================================
+
+  Metric         |  Baseline (mean +/- std)   |  Adaptive (mean +/- std)   | Delta mean |  Delta % | Winner    
+  ---------------+----------------------------+----------------------------+------------+----------+-----------
+  GD             |   0.004148 +/- 0.000566    |   0.002678 +/- 0.001058    |  -0.001470 |   -35.4% | Adaptive  
+  IGD            |   0.002494 +/- 0.000607    |   0.001634 +/- 0.000306    |  -0.000860 |   -34.5% | Adaptive  
+  IGD+           |   0.000907 +/- 0.000418    |   0.000411 +/- 0.000298    |  -0.000496 |   -54.7% | Adaptive  
+  HV             |   0.877904 +/- 0.000360    |   0.878073 +/- 0.000184    |  +0.000170 |    +0.0% | Adaptive  
+  Spread         |   1.079477 +/- 0.016337    |   1.079280 +/- 0.020935    |  -0.000197 |    -0.0% | Adaptive  
+  n_pareto       |             50             |             50             |         +0 |    +0.0% | Tie       
+  n_true_pareto  |             45             |             45             |         +0 |    +0.0% | Tie       
+  n_on_true_pf   |             20             |             31             |        +11 |   +55.0% | Adaptive  
+
+  Summary: Adaptive wins 6, Baseline wins 0, Tie 2

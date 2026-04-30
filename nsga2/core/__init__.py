@@ -5,6 +5,7 @@ from nsga2.core.crowding_distance import crowding_distance_assignment
 from nsga2.core.selection import tournament_selection
 from nsga2.core.crossover import uniform_crossover
 from nsga2.core.mutation import discrete_mutation
+from nsga2.core.adaptive_mutation import AdaptiveMutationPool
 
 __all__ = [
     "Individual",
@@ -13,5 +14,6 @@ __all__ = [
     "crowding_distance_assignment",
     "tournament_selection",
     "uniform_crossover",
-    "discrete_mutation"
+    "discrete_mutation",
+    "AdaptiveMutationPool"
 ]

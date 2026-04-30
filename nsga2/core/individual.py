@@ -14,7 +14,7 @@ class Individual:
         crowding_distance: crowding distance within its front.
     """
 
-    __slots__ = ("decision_vars", "objectives", "rank", "crowding_distance")
+    __slots__ = ("decision_vars", "objectives", "constraints", "rank", "crowding_distance", "mutation_type")
 
     def __init__(
         self,
@@ -27,6 +27,7 @@ class Individual:
         self.objectives: Optional[np.ndarray] = None
         self.rank: int = 0
         self.crowding_distance: float = 0.0
+        self.mutation_type: int = -1   # -1=unset, 0-2=strategy index, 3=no mutation
 
         # Allocate an array for objectives
         if n_objectives > 0:
@@ -59,4 +60,5 @@ class Individual:
         new.objectives = self.objectives.copy() if self.objectives is not None else None
         new.rank = self.rank
         new.crowding_distance = self.crowding_distance
+        new.mutation_type = self.mutation_type
         return new

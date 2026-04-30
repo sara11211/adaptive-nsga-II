@@ -7,6 +7,7 @@ from nsga2.core.crowding_distance import crowding_distance_assignment
 from nsga2.core.selection import tournament_selection
 from nsga2.core.crossover import uniform_crossover
 from nsga2.core.mutation import discrete_mutation
+from nsga2.core.adaptive_mutation import AdaptiveMutationPool
 
 
 class NSGA2:
@@ -31,6 +32,7 @@ class NSGA2:
         num_choices: Optional[np.ndarray] = None, 
         seed: Optional[int] = None,
         prob_crossover: float = 0.9,
+        adaptive_mutation: Optional[dict] = None,
     ) -> None:
         self.problem = problem
         self.pop_size = pop_size
@@ -48,6 +50,20 @@ class NSGA2:
         
         self.history: List[Dict] = []
 
+        # ── Adaptive mutation pool (SaMuNet) ──────────────────────────────
+        self._adaptive_mutation_config = adaptive_mutation
+        self._adaptive_pool: Optional[AdaptiveMutationPool] = None
+        self._feedback_queue: List[dict] = []
+        if adaptive_mutation is not None:
+            self._adaptive_pool = AdaptiveMutationPool(
+                num_choices=self.num_choices,
+                initial_probs=adaptive_mutation.get("initial_probs"),
+                update_period=adaptive_mutation.get("update_period", 5),
+            )
+            print(f"[NSGA-II] Adaptive mutation ENABLED  "
+                  f"(period={self._adaptive_pool.update_period}, "
+                  f"init_probs={self._adaptive_pool.probs.tolist()})")
+
     def _create_individual(self) -> Individual:
         """Create a random individual with integer decision variables."""
         vars_ = np.array([
@@ -64,31 +80,61 @@ class NSGA2:
 
     def _create_offspring(self, population: List[Individual]) -> List[Individual]:
         """Create N offspring via selection, crossover, and mutation."""
-        offspring: List[Individual] = []
+        offspring = []
+        use_adaptive = self._adaptive_pool is not None
+
         while len(offspring) < self.pop_size:
-            parent1 = tournament_selection(population, rng=self.rng)
-            parent2 = tournament_selection(population, rng=self.rng)
-
+            p1 = tournament_selection(population, self.rng)
+            p2 = tournament_selection(population, self.rng)
             c1_vars, c2_vars = uniform_crossover(
-                parent1.decision_vars, parent2.decision_vars,
-                prob_crossover=self.prob_crossover,
-                rng=self.rng,
-            )
-            
-            discrete_mutation(
-                c1_vars, self.prob_mutation, self.num_choices, rng=self.rng
-            )
-            discrete_mutation(
-                c2_vars, self.prob_mutation, self.num_choices, rng=self.rng
+                p1.decision_vars, p2.decision_vars,
+                self.prob_crossover, self.rng,
             )
 
-            c1 = Individual(c1_vars, n_objectives=self.n_obj)
-            c2 = Individual(c2_vars, n_objectives=self.n_obj)
-            c1.evaluate(self.problem)
-            c2.evaluate(self.problem)
+            if use_adaptive:
+                # ── Adaptive mutation: child 1 ────────────────────
+                strat_idx = self._adaptive_pool.select_strategy(self.rng)
+
+                c1 = Individual(c1_vars, n_objectives=self.n_obj)
+                c1.mutation_type = strat_idx
+                c1.evaluate(self.problem)
+                self._adaptive_pool.apply_strategy(c1.decision_vars, strat_idx, self.rng)
+                c1.evaluate(self.problem)
+
+                # DEFERRED feedback — save parent rank for later comparison
+                self._feedback_queue.append({
+                    "child": c1,
+                    "strategy_idx": strat_idx,
+                    "parent_rank": p1.rank,
+                })
+            else:
+                discrete_mutation(c1_vars, self.prob_mutation, self.num_choices, self.rng)
+                c1 = Individual(c1_vars, n_objectives=self.n_obj)
+                c1.evaluate(self.problem)
 
             offspring.append(c1)
+
             if len(offspring) < self.pop_size:
+                if use_adaptive:
+                    # ── Adaptive mutation: child 2 ────────────────
+                    strat_idx = self._adaptive_pool.select_strategy(self.rng)
+
+                    c2 = Individual(c2_vars, n_objectives=self.n_obj)
+                    c2.mutation_type = strat_idx
+                    c2.evaluate(self.problem)
+                    self._adaptive_pool.apply_strategy(c2.decision_vars, strat_idx, self.rng)
+                    c2.evaluate(self.problem)
+
+                    self._feedback_queue.append({
+                        "child": c2,
+                        "strategy_idx": strat_idx,
+                        "parent_rank": p2.rank,
+                    })
+                else:
+                    discrete_mutation(c2_vars, self.prob_mutation, self.num_choices, self.rng)
+                    c2 = Individual(c2_vars, n_objectives=self.n_obj)
+                    c2.evaluate(self.problem)
+
                 offspring.append(c2)
         return offspring
 
@@ -120,6 +166,31 @@ class NSGA2:
             # 3. Fast Non-dominated Sort
             fronts = fast_non_dominated_sort(combined)
 
+        # ── Deferred adaptive mutation feedback ─────────────────────
+            if self._adaptive_pool is not None and self._feedback_queue:
+                # Build rank lookup from the combined sort
+                rank_lookup = {}
+                for rank, front in enumerate(fronts):
+                    for ind in front:
+                        rank_lookup[id(ind)] = rank
+
+                for entry in self._feedback_queue:
+                    child_rank = rank_lookup.get(id(entry["child"]), 999)
+                    parent_rank = entry["parent_rank"]
+                    strat = entry["strategy_idx"]
+
+                    if child_rank < parent_rank:
+                        # Better front → SUCCESS
+                        self._adaptive_pool.record_outcome(strat, True)
+                    elif child_rank > parent_rank:
+                        # Worse front → FAILURE
+                        self._adaptive_pool.record_outcome(strat, False)
+                    else:
+                        # Same rank → NEUTRAL (could add CD tie-breaker here)
+                        pass
+
+                self._feedback_queue.clear()
+
             # 4. Fill New Population
             new_population: List[Individual] = []
             for front in fronts:
@@ -134,6 +205,13 @@ class NSGA2:
 
             # 5. Update Population
             population = new_population
+
+            # ── Adaptive mutation: update probabilities ────────────────
+            if self._adaptive_pool is not None:
+                updated = self._adaptive_pool.step()
+                if updated and verbose:
+                    print(f"  Gen {gen+1} | Adaptive mutation probs: "
+                          f"{self._adaptive_pool.summary}")
 
             # History Tracking
             current_fronts = fast_non_dominated_sort(population)
@@ -158,4 +236,9 @@ class NSGA2:
         pareto_set = np.array([ind.decision_vars for ind in final_fronts[0]])
         pareto_front = np.array([ind.objectives for ind in final_fronts[0]])
 
+        if verbose:
+            print(f"Done. Final Pareto front size: {len(pareto_front)}")
+            if self._adaptive_pool is not None:
+                print(f"  Final adaptive mutation probs: {self._adaptive_pool.summary}")
+        
         return pareto_set, pareto_front

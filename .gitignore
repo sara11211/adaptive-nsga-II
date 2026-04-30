@@ -11,6 +11,5 @@ venv/
 *.pth
 *.npy
 *.npz
-output/
 __pycache__/
 

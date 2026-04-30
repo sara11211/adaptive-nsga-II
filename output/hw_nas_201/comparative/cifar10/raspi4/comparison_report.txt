@@ -1,0 +1,36 @@
+========================================================================
+  HW-NAS-201 Comparison: Baseline NSGA-II vs Adaptive NSGA-II (SaMuNet)
+  Hardware: raspi4
+  Generated: 2026-04-30 21:48:07
+========================================================================
+
+=== Parameters ===
+  pop_size: 50
+  generations: 100
+  n_runs: 5
+  seed_base: 42
+  prob_crossover: 0.9
+  ref_offset: 0.01
+  dataset: cifar10
+  lookup_dir: C:\Users\DELL\Downloads\nsga-II-first-version\dynamic-nsga-II\data\lookup
+
+=== Adaptive Mutation Config ===
+  initial_probs: [0.3, 0.4, 0.3]
+  update_period: 5
+
+========================================================================
+  raspi4 — Metric Comparison
+========================================================================
+
+  Metric         |  Baseline (mean +/- std)   |  Adaptive (mean +/- std)   | Delta mean |  Delta % | Winner    
+  ---------------+----------------------------+----------------------------+------------+----------+-----------
+  GD             |   0.002406 +/- 0.000940    |   0.002075 +/- 0.000731    |  -0.000331 |   -13.8% | Adaptive  
+  IGD            |   0.001563 +/- 0.000377    |   0.001760 +/- 0.000842    |  +0.000197 |   +12.6% | Baseline  
+  IGD+           |   0.000213 +/- 0.000060    |   0.000156 +/- 0.000068    |  -0.000056 |   -26.5% | Adaptive  
+  HV             |   0.969430 +/- 0.000139    |   0.969354 +/- 0.000158    |  -0.000076 |    -0.0% | Baseline  
+  Spread         |   1.339008 +/- 0.015541    |   1.338211 +/- 0.011599    |  -0.000797 |    -0.1% | Adaptive  
+  n_pareto       |             50             |             50             |         +0 |    +0.0% | Tie       
+  n_true_pareto  |             47             |             47             |         +0 |    +0.0% | Tie       
+  n_on_true_pf   |             24             |             30             |         +6 |   +25.0% | Adaptive  
+
+  Summary: Adaptive wins 4, Baseline wins 2, Tie 2

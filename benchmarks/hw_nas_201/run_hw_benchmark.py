@@ -20,7 +20,7 @@ sys.path.insert(
 )
 
 from nsga2.core.nsga2 import NSGA2
-from benchmarks.hw_nas_201.config import ALGORITHM, DATA, OUTPUT, DEFAULT_DATASET
+from benchmarks.hw_nas_201.config import ALGORITHM, DATA, OUTPUT, DEFAULT_DATASET, ADAPTIVE_MUTATION
 from benchmarks.hw_nas_201.problem import HWNAS201, discover_hardware
 from benchmarks.hw_nas_201.utils import (
     extract_front,  compute_metrics, count_on_true_front, aggregate_metrics, print_metrics,
@@ -39,6 +39,7 @@ def _make_optimizer(problem, seed, pop_size):
         num_choices=problem.num_choices,
         seed=seed,
         prob_crossover=ALGORITHM["prob_crossover"],
+        adaptive_mutation=ADAPTIVE_MUTATION,
     )
 
 def run_hw_benchmark(

@@ -9,7 +9,15 @@ ALGORITHM = {
     "n_runs": 5,
     "seed_base": 42,
     "prob_crossover": 0.9,
-    "ref_offset": 0.1,
+    "ref_offset": 0.01,
+}
+
+# ── Adaptive Mutation (SaMuNet) ───────────────────────────────────────────────
+# Set to None to disable.  When enabled, replaces standard discrete_mutation
+# with a self-adaptive 3-strategy pool (conservative / uniform / aggressive).
+ADAPTIVE_MUTATION = {
+    "initial_probs": [0.3, 0.4, 0.3],   # conservative, uniform, aggressive
+    "update_period": 5,                    # recompute every N generations
 }
 
 # ── Dataset Settings ───────────────────────────────────────────────────────────

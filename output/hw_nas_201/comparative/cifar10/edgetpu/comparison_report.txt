@@ -1,0 +1,36 @@
+========================================================================
+  HW-NAS-201 Comparison: Baseline NSGA-II vs Adaptive NSGA-II (SaMuNet)
+  Hardware: edgetpu
+  Generated: 2026-04-30 21:49:47
+========================================================================
+
+=== Parameters ===
+  pop_size: 50
+  generations: 100
+  n_runs: 5
+  seed_base: 42
+  prob_crossover: 0.9
+  ref_offset: 0.01
+  dataset: cifar10
+  lookup_dir: C:\Users\DELL\Downloads\nsga-II-first-version\dynamic-nsga-II\data\lookup
+
+=== Adaptive Mutation Config ===
+  initial_probs: [0.3, 0.4, 0.3]
+  update_period: 5
+
+========================================================================
+  edgetpu — Metric Comparison
+========================================================================
+
+  Metric         |  Baseline (mean +/- std)   |  Adaptive (mean +/- std)   | Delta mean |  Delta % | Winner    
+  ---------------+----------------------------+----------------------------+------------+----------+-----------
+  GD             |   0.010779 +/- 0.000605    |   0.011895 +/- 0.001421    |  +0.001116 |   +10.4% | Baseline  
+  IGD            |   0.004199 +/- 0.000827    |   0.003877 +/- 0.000787    |  -0.000322 |    -7.7% | Adaptive  
+  IGD+           |   0.001126 +/- 0.001330    |   0.001605 +/- 0.000971    |  +0.000479 |   +42.5% | Baseline  
+  HV             |   0.865216 +/- 0.000906    |   0.863764 +/- 0.002631    |  -0.001452 |    -0.2% | Baseline  
+  Spread         |   1.323992 +/- 0.042709    |   1.352791 +/- 0.031274    |  +0.028799 |    +2.2% | Baseline  
+  n_pareto       |             50             |             50             |         +0 |    +0.0% | Tie       
+  n_true_pareto  |             29             |             29             |         +0 |    +0.0% | Tie       
+  n_on_true_pf   |             17             |             21             |         +4 |   +23.5% | Adaptive  
+
+  Summary: Adaptive wins 2, Baseline wins 4, Tie 2

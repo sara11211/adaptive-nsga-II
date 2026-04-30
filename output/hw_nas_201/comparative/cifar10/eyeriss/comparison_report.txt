@@ -1,0 +1,36 @@
+========================================================================
+  HW-NAS-201 Comparison: Baseline NSGA-II vs Adaptive NSGA-II (SaMuNet)
+  Hardware: eyeriss
+  Generated: 2026-04-30 21:52:47
+========================================================================
+
+=== Parameters ===
+  pop_size: 50
+  generations: 100
+  n_runs: 5
+  seed_base: 42
+  prob_crossover: 0.9
+  ref_offset: 0.01
+  dataset: cifar10
+  lookup_dir: C:\Users\DELL\Downloads\nsga-II-first-version\dynamic-nsga-II\data\lookup
+
+=== Adaptive Mutation Config ===
+  initial_probs: [0.3, 0.4, 0.3]
+  update_period: 5
+
+========================================================================
+  eyeriss — Metric Comparison
+========================================================================
+
+  Metric         |  Baseline (mean +/- std)   |  Adaptive (mean +/- std)   | Delta mean |  Delta % | Winner    
+  ---------------+----------------------------+----------------------------+------------+----------+-----------
+  GD             |   0.006174 +/- 0.001538    |   0.005392 +/- 0.002709    |  -0.000782 |   -12.7% | Adaptive  
+  IGD            |   0.003205 +/- 0.002478    |   0.002813 +/- 0.001544    |  -0.000392 |   -12.2% | Adaptive  
+  IGD+           |   0.000471 +/- 0.000941    |   0.000000 +/- 0.000000    |  -0.000471 |  -100.0% | Adaptive  
+  HV             |   0.847164 +/- 0.001718    |   0.848311 +/- 0.000848    |  +0.001147 |    +0.1% | Adaptive  
+  Spread         |   1.436174 +/- 0.016642    |   1.426552 +/- 0.001759    |  -0.009622 |    -0.7% | Adaptive  
+  n_pareto       |             50             |             50             |         +0 |    +0.0% | Tie       
+  n_true_pareto  |             17             |             17             |         +0 |    +0.0% | Tie       
+  n_on_true_pf   |             15             |             14             |         -1 |    -6.7% | Baseline  
+
+  Summary: Adaptive wins 5, Baseline wins 1, Tie 2
