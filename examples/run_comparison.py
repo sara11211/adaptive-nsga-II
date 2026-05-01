@@ -31,6 +31,8 @@ from benchmarks.hw_nas_201.utils import (
     generate_all_comparison_plots,
     save_comparison_report,
     save_comparison_csv,
+    save_overall_summary_txt,
+    save_overall_summary_csv,
 )
 
 BASELINE_LABEL = "Baseline"
@@ -133,8 +135,7 @@ def _run_comparison_for_dataset(
     dataset_dir = os.path.join(output_dir, dataset)
     os.makedirs(dataset_dir, exist_ok=True)
 
-    overall_csv_path = os.path.join(dataset_dir, "overall_comparison.csv")
-    overall_rows = []
+    results = []
 
     for hw in hardwares:
         hw_dir = os.path.join(dataset_dir, hw)
@@ -162,26 +163,19 @@ def _run_comparison_for_dataset(
             baseline["aggregate"], adaptive["aggregate"],
             params, ADAPTIVE_MUTATION, hw, hw_dir,
         )
-        hw_csv = save_comparison_csv(
+        save_comparison_csv(
             baseline["aggregate"], adaptive["aggregate"], hw, hw_dir,
         )
         print(f"    Saved comparison to {hw_dir}/")
 
-        with open(hw_csv, "r") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                overall_rows.append(row)
+        results.append({
+            "dataset": dataset,
+            "hardware": hw,
+            "baseline_agg": baseline["aggregate"],
+            "adaptive_agg": adaptive["aggregate"],
+        })
 
-    if overall_rows:
-        fieldnames = list(overall_rows[0].keys())
-        with open(overall_csv_path, "w", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(overall_rows)
-        print(f"\n  Dataset CSV: {overall_csv_path}")
-
-    _print_overall_summary(overall_rows, title=f"SUMMARY FOR {dataset}")
-    return overall_rows
+    return results
 
 
 def main():
@@ -204,13 +198,13 @@ def main():
     seed_base = ALGORITHM["seed_base"]
     output_dir = args.output_dir or os.path.join(OUTPUT["base_dir"], "comparative")
 
-    all_rows = {}
+    all_results = []
     for dataset in datasets:
         print(f"\n{'#'*60}")
         print(f"  Dataset: {dataset}")
         print(f"{'#'*60}")
 
-        rows = _run_comparison_for_dataset(
+        results = _run_comparison_for_dataset(
             dataset=dataset,
             hardwares=args.hardware,
             n_runs=n_runs,
@@ -219,47 +213,15 @@ def main():
             seed_base=seed_base,
             output_dir=output_dir,
         )
-        all_rows[dataset] = rows
+        all_results.extend(results)
 
-    if len(datasets) > 1:
-        combined = []
-        for rows in all_rows.values():
-            combined.extend(rows)
-        if combined:
-            _print_overall_summary(combined, title="OVERALL CROSS-DATASET SUMMARY")
+    # Save overall summary files
+    if all_results:
+        params = dict(ALGORITHM)
+        save_overall_summary_txt(all_results, params, output_dir)
+        save_overall_summary_csv(all_results, output_dir)
 
-    return all_rows
-
-def _print_overall_summary(rows, title="OVERALL COMPARISON SUMMARY"):
-    """Print a concise winner tally across all hardware targets."""
-    if not rows:
-        return
-
-    hw_groups = {}
-    for row in rows:
-        hw = row["hardware"]
-        hw_groups.setdefault(hw, []).append(row)
-
-    print(f"\n{'='*60}")
-    print(f"  {title}")
-    print(f"{'='*60}")
-    print(f"  {'Hardware':<12} {'Adaptive':>10} {'Baseline':>10} {'Tie':>6}")
-    print(f"  {'─'*12} {'─'*10} {'─'*10} {'─'*6}")
-
-    tally = {"Adaptive": 0, "Baseline": 0, "Tie": 0}
-
-    for hw, hw_rows in hw_groups.items():
-        hw_wins = {"Adaptive": 0, "Baseline": 0, "Tie": 0}
-        for row in hw_rows:
-            w = row.get("winner", "Tie")
-            hw_wins[w] = hw_wins.get(w, 0) + 1
-        tally["Adaptive"] += hw_wins["Adaptive"]
-        tally["Baseline"] += hw_wins["Baseline"]
-        tally["Tie"] += hw_wins["Tie"]
-        print(f"  {hw:<12} {hw_wins['Adaptive']:>10} {hw_wins['Baseline']:>10} {hw_wins['Tie']:>6}")
-
-    print(f"  {'─'*12} {'─'*10} {'─'*10} {'─'*6}")
-    print(f"  {'TOTAL':<12} {tally['Adaptive']:>10} {tally['Baseline']:>10} {tally['Tie']:>6}")
+    return all_results
 
 
 if __name__ == "__main__":

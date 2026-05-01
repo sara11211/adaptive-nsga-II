@@ -1,9 +1,5 @@
 hardware,metric,baseline_mean,baseline_std,adaptive_mean,adaptive_std,delta_mean,delta_pct,lower_is_better,winner
-edgetpu,GD,0.010779,0.000605,0.011895,0.001421,+0.001116,+10.35,True,Baseline
-edgetpu,IGD,0.004199,0.000827,0.003877,0.000787,-0.000322,-7.66,True,Adaptive
-edgetpu,IGD+,0.001126,0.001330,0.001605,0.000971,+0.000479,+42.53,True,Baseline
-edgetpu,HV,0.865216,0.000906,0.863764,0.002631,-0.001452,-0.17,False,Baseline
-edgetpu,Spread,1.323992,0.042709,1.352791,0.031274,+0.028799,+2.18,True,Baseline
-edgetpu,n_pareto,50,,50,,+0,+0.0,,Tie
-edgetpu,n_true_pareto,29,,29,,+0,+0.0,,Tie
-edgetpu,n_on_true_pf,17,,21,,+4,+23.5,,Tie
+edgetpu,IGD+,0.000838,0.000892,0.000714,0.000615,-0.000125,-14.86,True,Adaptive
+edgetpu,HV,0.865206,0.000372,0.864214,0.002428,-0.000992,-0.11,False,Baseline
+edgetpu,Spread,1.316124,0.035010,1.325967,0.046903,+0.009843,+0.75,True,Baseline
+edgetpu,n_on_true_pf,20,,18,,-2,-10.0,,Tie

@@ -388,9 +388,17 @@ def generate_all_comparison_plots(baseline_data, adaptive_data, hw, true_pf, sav
 
 # ── Comparison Reports ────────────────────────────────────────────────────────
 
+def _metric_change_pct(baseline_mean, adaptive_mean):
+    """Compute percentage change from baseline to adaptive."""
+    if abs(baseline_mean) < 1e-12:
+        return 0.0
+    return (adaptive_mean - baseline_mean) / abs(baseline_mean) * 100
+
 def save_comparison_report(baseline_agg, adaptive_agg, params,
                           adaptive_config, hw, save_dir):
-    """Save a detailed text comparison report for one hardware target."""
+    """Save comparison report for one hardware target.
+    Focuses on IGD+ (convergence) and Spread (diversity).
+    """
     os.makedirs(save_dir, exist_ok=True)
 
     lines = [
@@ -413,67 +421,65 @@ def save_comparison_report(baseline_agg, adaptive_agg, params,
     else:
         lines.append("  (disabled)")
 
-    # ── Table ───────────────────────────────────────────────────────────
+    # ── IGD+ (Convergence) ──────────────────────────────────────────────
     lines += [
         "",
         "=" * 72,
-        f"  {hw} — Metric Comparison",
+        "  IGD+ (Convergence - lower is better)",
         "=" * 72,
         "",
-        f"  {'Metric':<14} | {'Baseline (mean +/- std)':^26} | {'Adaptive (mean +/- std)':^26} | {'Delta mean':>10} | {'Delta %':>8} | {'Winner':<10}",
-        f"  {'-'*14}-+-{'-'*26}-+-{'-'*26}-+-{'-'*10}-+-{'-'*8}-+-{'-'*10}",
     ]
-
-    metric_order = [
-        "IGD+", "HV", "Spread",
-        "n_on_true_pf",
-    ]
-    wins = {"Adaptive": 0, "Baseline": 0, "Tie": 0}
-
-    for metric in metric_order:
-        b = baseline_agg.get(metric)
-        a = adaptive_agg.get(metric)
-        if b is None or a is None:
-            continue
-
-        if isinstance(b, dict) and isinstance(a, dict):
-            b_m, b_s = b["mean"], b["std"]
-            a_m, a_s = a["mean"], a["std"]
-            delta = a_m - b_m
-            pct = (delta / abs(b_m) * 100) if abs(b_m) > 1e-12 else 0.0
-            winner = _determine_winner(metric, b_m, a_m)
-
-            b_str = f"{b_m:.6f} +/- {b_s:.6f}"
-            a_str = f"{a_m:.6f} +/- {a_s:.6f}"
-            d_str = f"{delta:+.6f}"
-            p_str = f"{pct:+.1f}%"
-
-            wins[winner] += 1
+    b = baseline_agg.get("IGD+")
+    a = adaptive_agg.get("IGD+")
+    if b and a and isinstance(b, dict) and isinstance(a, dict):
+        b_m, b_s = b["mean"], b["std"]
+        a_m, a_s = a["mean"], a["std"]
+        pct = _metric_change_pct(b_m, a_m)
+        if a_m < b_m:
+            tag = "[IMPROVED]"
+            verdict = "better"
+        elif a_m > b_m:
+            tag = "[WORSE]"
+            verdict = "worse"
         else:
-            # Scalar (n_pareto, n_true_pareto, n_on_true_pf)
-            b_v, a_v = float(b), float(a)
-            delta = int(a_v - b_v)
-            pct = (delta / abs(b_v) * 100) if abs(b_v) > 1e-12 else 0.0
-            winner = _determine_winner(metric, b_v, a_v)   
+            tag = "[NO CHANGE]"
+            verdict = "equal"
+        lines.append(f"  Baseline:  {b_m:.6f} +/- {b_s:.6f}")
+        lines.append(f"  Adaptive:  {a_m:.6f} +/- {a_s:.6f}")
+        lines.append(f"  Change:    {pct:+.1f}%  {tag}")
+        lines.append(f"  Verdict:   Adaptive is {verdict} on convergence")
+    else:
+        lines.append("  (no IGD+ data)")
 
-            b_str = str(b)
-            a_str = str(a)
-            d_str = f"{delta:+d}"
-            p_str = f"{pct:+.1f}%"
-
-            wins[winner] += 1                                
-
-        lines.append(
-            f"  {metric:<14} | {b_str:^26} | {a_str:^26} "
-            f"| {d_str:>10} | {p_str:>8} | {winner:<10}"
-        )
-
+    # ── Spread (Diversity) ──────────────────────────────────────────────
     lines += [
         "",
-        f"  Summary: Adaptive wins {wins['Adaptive']}, "
-        f"Baseline wins {wins['Baseline']}, Tie {wins['Tie']}",
+        "=" * 72,
+        "  Spread (Diversity - lower is better)",
+        "=" * 72,
         "",
     ]
+    b = baseline_agg.get("Spread")
+    a = adaptive_agg.get("Spread")
+    if b and a and isinstance(b, dict) and isinstance(a, dict):
+        b_m, b_s = b["mean"], b["std"]
+        a_m, a_s = a["mean"], a["std"]
+        pct = _metric_change_pct(b_m, a_m)
+        if a_m < b_m:
+            tag = "[IMPROVED]"
+            verdict = "better"
+        elif a_m > b_m:
+            tag = "[WORSE]"
+            verdict = "worse"
+        else:
+            tag = "[NO CHANGE]"
+            verdict = "equal"
+        lines.append(f"  Baseline:  {b_m:.6f} +/- {b_s:.6f}")
+        lines.append(f"  Adaptive:  {a_m:.6f} +/- {a_s:.6f}")
+        lines.append(f"  Change:    {pct:+.1f}%  {tag}")
+        lines.append(f"  Verdict:   Adaptive is {verdict} on diversity")
+    else:
+        lines.append("  (no Spread data)")
 
     path = os.path.join(save_dir, "comparison_report.txt")
     with open(path, "w") as f:
@@ -531,5 +537,188 @@ def save_comparison_csv(baseline_agg, adaptive_agg, hw, save_dir):
                     hw, metric, b_v, "", a_v, "",
                     f"{delta:+d}", f"{pct:+.1f}", "", "Tie",
                 ])
+
+    return path
+
+def save_overall_summary_txt(all_results, params, output_dir):
+    """Save overall summary across all datasets and hardware targets."""
+    os.makedirs(output_dir, exist_ok=True)
+
+    lines = [
+        "=" * 72,
+        "  HW-NAS-201 Overall Summary: Baseline vs Adaptive NSGA-II (SaMuNet)",
+        f"  Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        "=" * 72,
+        "",
+    ]
+
+    # ── IGD+ table ──────────────────────────────────────────────────────
+    lines += [
+        "  IGD+ (Convergence - lower is better)",
+        "",
+        f"  {'Dataset':<14} {'Hardware':<14} {'Baseline':>24} {'Adaptive':>24} {'Change':>10} {'Result':<12}",
+        f"  {'-'*14} {'-'*14} {'-'*24} {'-'*24} {'-'*10} {'-'*12}",
+    ]
+
+    igd_improved = 0
+    igd_worse = 0
+    igd_total = 0
+
+    for r in all_results:
+        ds = r["dataset"]
+        hw = r["hardware"]
+        b = r["baseline_agg"].get("IGD+")
+        a = r["adaptive_agg"].get("IGD+")
+        if not b or not a or not isinstance(b, dict) or not isinstance(a, dict):
+            continue
+        igd_total += 1
+        b_m, b_s = b["mean"], b["std"]
+        a_m, a_s = a["mean"], a["std"]
+        pct = _metric_change_pct(b_m, a_m)
+        if a_m < b_m:
+            igd_improved += 1
+            result = "[IMPROVED]"
+        elif a_m > b_m:
+            igd_worse += 1
+            result = "[WORSE]"
+        else:
+            result = "[NO CHANGE]"
+        lines.append(
+            f"  {ds:<14} {hw:<14} {b_m:.4f} +/- {b_s:.4f}      "
+            f"{a_m:.4f} +/- {a_s:.4f}      {pct:+.1f}%  {result:<12}"
+        )
+
+    lines.append("")
+    lines.append(
+        f"  IGD+ Summary: {igd_improved}/{igd_total} improved, "
+        f"{igd_worse}/{igd_total} worse"
+    )
+
+    # ── Spread table ────────────────────────────────────────────────────
+    lines += [
+        "",
+        "  Spread (Diversity - lower is better)",
+        "",
+        f"  {'Dataset':<14} {'Hardware':<14} {'Baseline':>24} {'Adaptive':>24} {'Change':>10} {'Result':<12}",
+        f"  {'-'*14} {'-'*14} {'-'*24} {'-'*24} {'-'*10} {'-'*12}",
+    ]
+
+    sp_improved = 0
+    sp_worse = 0
+    sp_total = 0
+
+    for r in all_results:
+        ds = r["dataset"]
+        hw = r["hardware"]
+        b = r["baseline_agg"].get("Spread")
+        a = r["adaptive_agg"].get("Spread")
+        if not b or not a or not isinstance(b, dict) or not isinstance(a, dict):
+            continue
+        sp_total += 1
+        b_m, b_s = b["mean"], b["std"]
+        a_m, a_s = a["mean"], a["std"]
+        pct = _metric_change_pct(b_m, a_m)
+        if a_m < b_m:
+            sp_improved += 1
+            result = "[IMPROVED]"
+        elif a_m > b_m:
+            sp_worse += 1
+            result = "[WORSE]"
+        else:
+            result = "[NO CHANGE]"
+        lines.append(
+            f"  {ds:<14} {hw:<14} {b_m:.4f} +/- {b_s:.4f}      "
+            f"{a_m:.4f} +/- {a_s:.4f}      {pct:+.1f}%  {result:<12}"
+        )
+
+    lines.append("")
+    lines.append(
+        f"  Spread Summary: {sp_improved}/{sp_total} improved, "
+        f"{sp_worse}/{sp_total} worse"
+    )
+
+    # ── Overall verdict ─────────────────────────────────────────────────
+    lines += [
+        "",
+        "=" * 72,
+        "  Overall Verdict",
+        "=" * 72,
+        "",
+    ]
+    lines.append(
+        f"  IGD+ (convergence):  {igd_improved} improved, "
+        f"{igd_worse} worse out of {igd_total}"
+    )
+    lines.append(
+        f"  Spread (diversity):  {sp_improved} improved, "
+        f"{sp_worse} worse out of {sp_total}"
+    )
+
+    path = os.path.join(output_dir, "overall_summary.txt")
+    with open(path, "w") as f:
+        f.write("\n".join(lines))
+    print(f"  Overall summary saved to {path}")
+    return path
+
+
+def save_overall_summary_csv(all_results, output_dir):
+    """Save overall summary across all datasets/hardware to CSV."""
+    os.makedirs(output_dir, exist_ok=True)
+    path = os.path.join(output_dir, "overall_summary.csv")
+
+    with open(path, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            "dataset", "hardware",
+            "igdp_baseline_mean", "igdp_baseline_std",
+            "igdp_adaptive_mean", "igdp_adaptive_std",
+            "igdp_change_pct", "igdp_result",
+            "spread_baseline_mean", "spread_baseline_std",
+            "spread_adaptive_mean", "spread_adaptive_std",
+            "spread_change_pct", "spread_result",
+        ])
+
+        for r in all_results:
+            ds = r["dataset"]
+            hw = r["hardware"]
+
+            b_igd = r["baseline_agg"].get("IGD+", {})
+            a_igd = r["adaptive_agg"].get("IGD+", {})
+            b_sp = r["baseline_agg"].get("Spread", {})
+            a_sp = r["adaptive_agg"].get("Spread", {})
+
+            igd_b_m = b_igd.get("mean", "")
+            igd_b_s = b_igd.get("std", "")
+            igd_a_m = a_igd.get("mean", "")
+            igd_a_s = a_igd.get("std", "")
+
+            if isinstance(igd_b_m, float) and isinstance(igd_a_m, float):
+                igd_pct = _metric_change_pct(igd_b_m, igd_a_m)
+                igd_res = ("IMPROVED" if igd_a_m < igd_b_m
+                           else "WORSE" if igd_a_m > igd_b_m
+                           else "NO CHANGE")
+            else:
+                igd_pct = ""
+                igd_res = ""
+
+            sp_b_m = b_sp.get("mean", "")
+            sp_b_s = b_sp.get("std", "")
+            sp_a_m = a_sp.get("mean", "")
+            sp_a_s = a_sp.get("std", "")
+
+            if isinstance(sp_b_m, float) and isinstance(sp_a_m, float):
+                sp_pct = _metric_change_pct(sp_b_m, sp_a_m)
+                sp_res = ("IMPROVED" if sp_a_m < sp_b_m
+                          else "WORSE" if sp_a_m > sp_b_m
+                          else "NO CHANGE")
+            else:
+                sp_pct = ""
+                sp_res = ""
+
+            writer.writerow([
+                ds, hw,
+                igd_b_m, igd_b_s, igd_a_m, igd_a_s, igd_pct, igd_res,
+                sp_b_m, sp_b_s, sp_a_m, sp_a_s, sp_pct, sp_res,
+            ])
 
     return path

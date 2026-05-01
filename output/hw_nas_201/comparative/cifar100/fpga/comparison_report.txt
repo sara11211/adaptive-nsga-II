@@ -1,7 +1,7 @@
 ========================================================================
   HW-NAS-201 Comparison: Baseline NSGA-II vs Adaptive NSGA-II (SaMuNet)
   Hardware: fpga
-  Generated: 2026-04-30 22:04:12
+  Generated: 2026-05-01 19:51:47
 ========================================================================
 
 === Parameters ===
@@ -19,18 +19,19 @@
   update_period: 5
 
 ========================================================================
-  fpga — Metric Comparison
+  IGD+ (Convergence - lower is better)
 ========================================================================
 
-  Metric         |  Baseline (mean +/- std)   |  Adaptive (mean +/- std)   | Delta mean |  Delta % | Winner    
-  ---------------+----------------------------+----------------------------+------------+----------+-----------
-  GD             |   0.009196 +/- 0.001837    |   0.008630 +/- 0.002099    |  -0.000566 |    -6.2% | Adaptive  
-  IGD            |   0.009412 +/- 0.008388    |   0.004612 +/- 0.001635    |  -0.004799 |   -51.0% | Adaptive  
-  IGD+           |   0.004791 +/- 0.007663    |   0.002253 +/- 0.001770    |  -0.002538 |   -53.0% | Adaptive  
-  HV             |   0.773448 +/- 0.000726    |   0.775229 +/- 0.000880    |  +0.001780 |    +0.2% | Adaptive  
-  Spread         |   1.420922 +/- 0.009710    |   1.435324 +/- 0.029154    |  +0.014403 |    +1.0% | Baseline  
-  n_pareto       |             50             |             50             |         +0 |    +0.0% | Tie       
-  n_true_pareto  |             15             |             15             |         +0 |    +0.0% | Tie       
-  n_on_true_pf   |             10             |             12             |         +2 |   +20.0% | Adaptive  
+  Baseline:  0.006656 +/- 0.005428
+  Adaptive:  0.004791 +/- 0.005799
+  Change:    -28.0%  [IMPROVED]
+  Verdict:   Adaptive is better on convergence
 
-  Summary: Adaptive wins 5, Baseline wins 1, Tie 2
+========================================================================
+  Spread (Diversity - lower is better)
+========================================================================
+
+  Baseline:  1.447730 +/- 0.027833
+  Adaptive:  1.395296 +/- 0.066892
+  Change:    -3.6%  [IMPROVED]
+  Verdict:   Adaptive is better on diversity
