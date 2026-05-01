@@ -152,10 +152,18 @@ class AdaptiveMutationPool:
     # ── Selection ─────────────────────────────────────────────────────────
 
     def select_strategy(self, rng: np.random.RandomState) -> int:
-        """Roulette-wheel selection of a strategy index."""
-        cumsum = np.cumsum(self.probs)
-        r = rng.rand() * cumsum[-1]
-        return int(np.searchsorted(cumsum, r))
+        """UCB1 instead of roulette wheel."""
+        total = self._success.sum() + self._fail.sum()
+        if total == 0:
+            return int(rng.randint(0, self.n_strategies))
+        
+        pulls = self._success + self._fail
+        pulls[pulls == 0] = 1  # avoid division by zero
+        mean_reward = self._success / pulls
+        exploration = np.sqrt(np.log(total + 1) / pulls)
+        
+        ucb = mean_reward + 1.41 * exploration  # C = sqrt(2)
+        return int(np.argmax(ucb))
 
     def apply_strategy(
         self,

@@ -425,8 +425,8 @@ def save_comparison_report(baseline_agg, adaptive_agg, params,
     ]
 
     metric_order = [
-        "GD", "IGD", "IGD+", "HV", "Spread",
-        "n_pareto", "n_true_pareto", "n_on_true_pf",
+        "IGD+", "HV", "Spread",
+        "n_on_true_pf",
     ]
     wins = {"Adaptive": 0, "Baseline": 0, "Tie": 0}
 
@@ -487,8 +487,8 @@ def save_comparison_csv(baseline_agg, adaptive_agg, hw, save_dir):
     os.makedirs(save_dir, exist_ok=True)
 
     metric_order = [
-        "GD", "IGD", "IGD+", "HV", "Spread",
-        "n_pareto", "n_true_pareto", "n_on_true_pf",
+        "IGD+", "HV", "Spread",
+        "n_on_true_pf",
     ]
     path = os.path.join(save_dir, "comparison_metrics.csv")
 

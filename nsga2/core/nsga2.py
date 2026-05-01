@@ -105,7 +105,7 @@ class NSGA2:
                 self._feedback_queue.append({
                     "child": c1,
                     "strategy_idx": strat_idx,
-                    "parent_rank": p1.rank,
+                    "parent": p1,
                 })
             else:
                 discrete_mutation(c1_vars, self.prob_mutation, self.num_choices, self.rng)
@@ -128,7 +128,7 @@ class NSGA2:
                     self._feedback_queue.append({
                         "child": c2,
                         "strategy_idx": strat_idx,
-                        "parent_rank": p2.rank,
+                        "parent": p2,
                     })
                 else:
                     discrete_mutation(c2_vars, self.prob_mutation, self.num_choices, self.rng)
@@ -165,6 +165,10 @@ class NSGA2:
 
             # 3. Fast Non-dominated Sort
             fronts = fast_non_dominated_sort(combined)
+            
+            # Compute crowding distance for ALL fronts 
+            for front in fronts:
+                crowding_distance_assignment(front)
 
         # ── Deferred adaptive mutation feedback ─────────────────────
             if self._adaptive_pool is not None and self._feedback_queue:
@@ -176,18 +180,21 @@ class NSGA2:
 
                 for entry in self._feedback_queue:
                     child_rank = rank_lookup.get(id(entry["child"]), 999)
-                    parent_rank = entry["parent_rank"]
+                    parent_rank = rank_lookup.get(id(entry["parent"]), 999)
                     strat = entry["strategy_idx"]
 
                     if child_rank < parent_rank:
-                        # Better front → SUCCESS
                         self._adaptive_pool.record_outcome(strat, True)
                     elif child_rank > parent_rank:
-                        # Worse front → FAILURE
                         self._adaptive_pool.record_outcome(strat, False)
                     else:
-                        # Same rank → NEUTRAL (could add CD tie-breaker here)
-                        pass
+                        # Same rank → use crowding distance as tie-breaker
+                        child_cd = entry["child"].crowding_distance
+                        parent_cd = entry["parent"].crowding_distance
+                        if child_cd > parent_cd:
+                            self._adaptive_pool.record_outcome(strat, True)   # fills empty space
+                        elif child_cd < parent_cd:
+                            self._adaptive_pool.record_outcome(strat, False)  # crowds dense region
 
                 self._feedback_queue.clear()
 
