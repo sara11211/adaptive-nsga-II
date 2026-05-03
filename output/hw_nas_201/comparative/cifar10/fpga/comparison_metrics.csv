@@ -1,5 +1,5 @@
 hardware,metric,baseline_mean,baseline_std,adaptive_mean,adaptive_std,delta_mean,delta_pct,lower_is_better,winner
-fpga,IGD+,0.007561,0.008415,0.002022,0.003914,-0.005539,-73.25,True,Adaptive
-fpga,HV,0.798647,0.001860,0.799670,0.001121,+0.001023,+0.13,False,Adaptive
-fpga,Spread,1.533588,0.041174,1.534694,0.032653,+0.001106,+0.07,True,Baseline
+fpga,IGD+,0.004924,0.004020,0.000088,0.000124,-0.004836,-98.21,True,Adaptive
+fpga,HV,0.799173,0.001105,0.799947,0.001315,+0.000774,+0.10,False,Adaptive
+fpga,Spread,1.551020,0.033326,1.523810,0.019241,-0.027211,-1.75,True,Adaptive
 fpga,n_on_true_pf,10,,10,,+0,+0.0,,Tie

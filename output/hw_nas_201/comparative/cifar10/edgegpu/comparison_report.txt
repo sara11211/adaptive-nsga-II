@@ -1,13 +1,13 @@
 ========================================================================
   HW-NAS-201 Comparison: Baseline NSGA-II vs Adaptive NSGA-II (SaMuNet)
   Hardware: edgegpu
-  Generated: 2026-05-01 19:19:36
+  Generated: 2026-05-01 23:48:55
 ========================================================================
 
 === Parameters ===
   pop_size: 50
   generations: 100
-  n_runs: 5
+  n_runs: 3
   seed_base: 42
   prob_crossover: 0.9
   ref_offset: 0.01
@@ -22,16 +22,16 @@
   IGD+ (Convergence - lower is better)
 ========================================================================
 
-  Baseline:  0.000551 +/- 0.000429
-  Adaptive:  0.000743 +/- 0.000476
-  Change:    +34.7%  [WORSE]
+  Baseline:  0.000623 +/- 0.000509
+  Adaptive:  0.001038 +/- 0.000320
+  Change:    +66.5%  [WORSE]
   Verdict:   Adaptive is worse on convergence
 
 ========================================================================
   Spread (Diversity - lower is better)
 ========================================================================
 
-  Baseline:  1.622280 +/- 0.035736
-  Adaptive:  1.616962 +/- 0.017687
-  Change:    -0.3%  [IMPROVED]
+  Baseline:  1.630924 +/- 0.043950
+  Adaptive:  1.624300 +/- 0.008222
+  Change:    -0.4%  [IMPROVED]
   Verdict:   Adaptive is better on diversity

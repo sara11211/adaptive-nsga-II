@@ -1,5 +1,5 @@
 hardware,metric,baseline_mean,baseline_std,adaptive_mean,adaptive_std,delta_mean,delta_pct,lower_is_better,winner
-raspi4,IGD+,0.001174,0.000400,0.000663,0.000262,-0.000511,-43.50,True,Adaptive
-raspi4,HV,0.815512,0.000190,0.814667,0.001266,-0.000845,-0.10,False,Baseline
-raspi4,Spread,1.222791,0.014205,1.220282,0.009862,-0.002510,-0.21,True,Adaptive
+raspi4,IGD+,0.001016,0.000447,0.000560,0.000114,-0.000456,-44.87,True,Adaptive
+raspi4,HV,0.815554,0.000096,0.814489,0.001387,-0.001065,-0.13,False,Baseline
+raspi4,Spread,1.228728,0.013144,1.216553,0.011282,-0.012175,-0.99,True,Adaptive
 raspi4,n_on_true_pf,27,,24,,-3,-11.1,,Tie

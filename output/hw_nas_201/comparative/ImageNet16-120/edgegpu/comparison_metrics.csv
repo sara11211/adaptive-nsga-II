@@ -1,5 +1,5 @@
 hardware,metric,baseline_mean,baseline_std,adaptive_mean,adaptive_std,delta_mean,delta_pct,lower_is_better,winner
-edgegpu,IGD+,0.001805,0.001143,0.001739,0.001439,-0.000066,-3.67,True,Adaptive
-edgegpu,HV,0.801815,0.000433,0.801866,0.000310,+0.000052,+0.01,False,Adaptive
-edgegpu,Spread,1.361977,0.022573,1.370410,0.044138,+0.008433,+0.62,True,Baseline
+edgegpu,IGD+,0.002717,0.000310,0.002228,0.001684,-0.000490,-18.03,True,Adaptive
+edgegpu,HV,0.801582,0.000415,0.801865,0.000360,+0.000282,+0.04,False,Adaptive
+edgegpu,Spread,1.379096,0.010344,1.364904,0.056310,-0.014192,-1.03,True,Adaptive
 edgegpu,n_on_true_pf,25,,25,,+0,+0.0,,Tie

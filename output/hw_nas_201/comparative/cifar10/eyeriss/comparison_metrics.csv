@@ -1,5 +1,5 @@
 hardware,metric,baseline_mean,baseline_std,adaptive_mean,adaptive_std,delta_mean,delta_pct,lower_is_better,winner
 eyeriss,IGD+,0.000000,0.000000,0.000000,0.000000,+0.000000,+0.00,True,Tie
-eyeriss,HV,0.848162,0.001234,0.846606,0.000650,-0.001556,-0.18,False,Baseline
-eyeriss,Spread,1.426887,0.001375,1.426190,0.004762,-0.000697,-0.05,True,Adaptive
+eyeriss,HV,0.847777,0.001443,0.847069,0.000406,-0.000708,-0.08,False,Baseline
+eyeriss,Spread,1.427636,0.001323,1.428571,0.000000,+0.000936,+0.07,True,Baseline
 eyeriss,n_on_true_pf,17,,15,,-2,-11.8,,Tie

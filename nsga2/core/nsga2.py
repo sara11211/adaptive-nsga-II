@@ -97,7 +97,6 @@ class NSGA2:
 
                 c1 = Individual(c1_vars, n_objectives=self.n_obj)
                 c1.mutation_type = strat_idx
-                c1.evaluate(self.problem)
                 self._adaptive_pool.apply_strategy(c1.decision_vars, strat_idx, self.rng)
                 c1.evaluate(self.problem)
 
@@ -121,7 +120,6 @@ class NSGA2:
 
                     c2 = Individual(c2_vars, n_objectives=self.n_obj)
                     c2.mutation_type = strat_idx
-                    c2.evaluate(self.problem)
                     self._adaptive_pool.apply_strategy(c2.decision_vars, strat_idx, self.rng)
                     c2.evaluate(self.problem)
 
