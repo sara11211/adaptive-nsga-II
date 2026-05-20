@@ -6,16 +6,8 @@ An NSGA-II implementation with a self-adaptive mutation pool. Three complementar
 
 Instead of a fixed mutation operator, the algorithm maintains three strategies whose selection probabilities update periodically based on their observed effectiveness. Each generation follows this cycle:
 
-1. **Select** a strategy probabilistically for each offspring
-2. **Apply** it to mutate the offspring's genes
-3. **Evaluate** offspring and compare their non-dominated rank to their parent's rank
-4. **Reward** the strategy (success/failure credit based on rank comparison)
-5. Every `update_period` generations, **recompute** probabilities from accumulated success rates
-
-Feedback is deferred until after the combined population sort, ensuring fair rank comparison.
-
 <p align="center">
-  <img src="https://i.imgur.com/31FWDPt.png" alt="Dynamic Mutation Flowchart" width="80%"/>
+  <img src="https://i.imgur.com/31FWDPt.png" alt="Dynamic Mutation Flowchart" width="85%"/>
 </p>
 
 ### Mutation Strategies
@@ -62,8 +54,6 @@ pip install -r requirements.txt
 Verify with `pytest tests/ -v`.
 
 ## Benchmark: HW-NAS-201
-
-Optimizes **accuracy** vs. **inference latency** on NAS-Bench-201 (6-gene cell encoding, 5 operations per gene) across 3 datasets and 6 edge devices.
 
 ```bash
 # Run on specific dataset and hardware
@@ -124,5 +114,6 @@ All overridable via CLI arguments.
 
 1. K. Deb et al., "A Fast and Elitist Multiobjective Genetic Algorithm: NSGA-II," *IEEE TEVC*, 2002.
 2. B. Xue et al., "A Self-Adaptive Mutation Neural Architecture Search Algorithm Based on Blocks," *IEEE CIM*, 2021.
-3. X. Dong & Y. Yang, "Searching for a Robust Neural Architecture in Four GPU Hours," *CVPR*, 2020.
-4. Y. Hu et al., "HW-NAS-Bench: Hardware-Aware Neural Architecture Search Benchmark," *NeurIPS*, 2020.
+
+---
+_**Contributors:** ABAZIZ Sarah & SEBBAH Sarah Farah_
