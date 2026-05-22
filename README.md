@@ -7,7 +7,7 @@ An NSGA-II implementation with a self-adaptive mutation pool. Three complementar
 Instead of a fixed mutation operator, the algorithm maintains three strategies whose selection probabilities update periodically based on their observed effectiveness. Each generation follows this cycle:
 
 <p align="center">
-  <img src="https://i.imgur.com/RjCTZpV.png" alt="Dynamic Mutation Flowchart" width="85%"/>
+  <img src="https://i.imgur.com/het8F0G.png" alt="Dynamic Mutation Flowchart" width="85%"/>
 </p>
 
 ### Mutation Strategies
