@@ -114,6 +114,3 @@ All overridable via CLI arguments.
 
 1. K. Deb et al., "A Fast and Elitist Multiobjective Genetic Algorithm: NSGA-II," *IEEE TEVC*, 2002.
 2. B. Xue et al., "A Self-Adaptive Mutation Neural Architecture Search Algorithm Based on Blocks," *IEEE CIM*, 2021.
-
----
-_**Contributors:** ABAZIZ Sarah & SEBBAH Sarah Farah_
